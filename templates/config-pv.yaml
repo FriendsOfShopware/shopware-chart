@@ -1,0 +1,14 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ include "shopware-chart.fullname" . }}
+  labels: {{- include "shopware-chart.labels" . | nindent 4 }}
+spec:
+  accessModes:
+  {{- range .Values.configPersistence.accessModes }}
+  - {{ . | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.configPersistence.size | quote }}
+  storageClassName: {{ .Values.configPersistence.storageClassName | quote }}

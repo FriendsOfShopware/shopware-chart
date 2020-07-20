@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ include "shopware-chart.fullname" . }}-consumer"
+  labels:
+    {{- include "shopware-chart.labels" . | nindent 4 }}
+spec:
+{{- if not .Values.shopware.consumer.enabled }}
+  replicas: {{ .Values.shopware.consumer.replicaCount }}
+{{- end }}
+  selector:
+    matchLabels:
+      {{- include "shopware-chart.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "shopware-chart.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      restartPolicy: Always
+      volumes:
+        - name: config-pvc
+          persistentVolumeClaim:
+            claimName: {{ include "shopware-chart.fullname" . }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args: ["cli", "messenger:consume", "--memory-limit=1G", "--time-limit=60"]
+          env:
+            {{- include "shopware-chart.env-cfg" . | nindent 12 }}
+          volumeMounts:
+            - name: config-pvc
+              mountPath: /state
+              subPath: ./state
+            - name: config-pvc
+              mountPath: /var/www/html/custom/plugins
+              subPath: ./plugins
+            - name: config-pvc
+              mountPath: /var/www/html/config/jwt
+              subPath: ./jwt
+            - name: config-pvc
+              mountPath: /var/www/html/public/theme
+              subPath: ./public/theme
+            - name: config-pvc
+              mountPath: /var/www/html/public/bundles
+              subPath: ./public/bundles
+            - name: config-pvc
+              mountPath: /var/www/html/public/thumbnail
+              subPath: ./public/thumbnail
+            - name: config-pvc
+              mountPath: /var/www/html/public/media
+              subPath: ./public/media
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
