@@ -1,3 +1,5 @@
 /charts
 /.idea
 /my.yaml
+/jwt_private.pem
+/jwt_public.pem

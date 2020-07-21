@@ -27,14 +27,17 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       volumes:
-        - name: config-pvc
+        - name: state-pvc
           persistentVolumeClaim:
-            claimName: {{ include "shopware-chart.fullname" . }}
+            claimName: "{{ include "shopware-chart.fullname" . }}-state"
         - name: custom-config
           configMap:
             name: "{{ include "shopware-chart.fullname" . }}-custom-config"
+        - name: jwt
+          secret:
+            secretName: "{{ include "shopware-chart.fullname" . }}-jwt"
       initContainers:
-        - name: init-{{ .Chart.Name }}
+        - name: init
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -44,15 +47,15 @@ spec:
             - secretRef:
                 name: "{{ include "shopware-chart.fullname" . }}-env"
           volumeMounts:
-            - name: config-pvc
+            - name: state-pvc
               mountPath: /state
               subPath: ./state
-            - name: config-pvc
-              mountPath: /var/www/html/config/jwt
-              subPath: ./jwt
             - name: custom-config
               mountPath: "/var/www/html/config/packages/custom.yaml"
               subPath: ./custom.yml
+              readOnly: true
+            - name: jwt
+              mountPath: "/var/www/html/config/jwt/"
               readOnly: true
           env:
             {{- include "shopware-chart.env-cfg" . | nindent 12 }}
@@ -69,12 +72,12 @@ spec:
           env:
             {{- include "shopware-chart.env-cfg" . | nindent 12 }}
           volumeMounts:
-            - name: config-pvc
-              mountPath: /var/www/html/config/jwt
-              subPath: ./jwt
             - name: custom-config
               mountPath: "/var/www/html/config/packages/custom.yaml"
               subPath: ./custom.yml
+              readOnly: true
+            - name: jwt
+              mountPath: "/var/www/html/config/jwt/"
               readOnly: true
           ports:
             - name: http

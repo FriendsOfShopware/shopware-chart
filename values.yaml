@@ -78,13 +78,13 @@ shopware:
 configPersistence:
   accessModes:
     - ReadWriteOnce
-  size: 512M
+  size: 10M
   storageClassName: ""
 
 podAnnotations: {}
 
-podSecurityContext: {}
-  # fsGroup: 2000
+podSecurityContext:
+  fsGroup: 1000
 
 securityContext: {}
   # capabilities:
@@ -135,6 +135,8 @@ tolerations: []
 affinity: {}
 
 mysql:
+  enabled: true
+
   ## Disable MySQL replication
   replication:
     enabled: true
@@ -186,7 +188,7 @@ mysql:
       size: 1Gi
 
 elasticsearch:
-  enabled: true
+  enabled: false
 
 redis:
   usePassword: false

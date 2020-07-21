@@ -1,7 +1,7 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: {{ include "shopware-chart.fullname" . }}
+  name: "{{ include "shopware-chart.fullname" . }}-state"
   labels: {{- include "shopware-chart.labels" . | nindent 4 }}
 spec:
   accessModes:

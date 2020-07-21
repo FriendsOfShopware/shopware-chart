@@ -16,3 +16,10 @@ Shopware is a trendsetting ecommerce platform to power your online business. Our
 ## Parameters
 
 See ``values.yml``
+
+## Installation
+
+* Generate a JWT Token using `generate_jwt.php` script
+* Configure parameters
+* Run `helm install`
+
