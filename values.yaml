@@ -43,7 +43,7 @@ shopware:
     adminUsername: "admin"
     adminPassword: "shopware"
   elasticSearch:
-    hosts: "elasticsearch-master"
+    hosts: "shopware-elasticsearch-master"
     enabled: false
     indexingEnabled: false
     indexPrefix: ''
@@ -54,12 +54,12 @@ shopware:
     disableWorker: true
   cache:
     adapter: "redis"
-    host: "redis-master"
+    host: "shopware-redis-master"
     port: 6379
     database: 0
   session:
     adapter: "redis"
-    host: "redis-master"
+    host: "shopware-redis-master"
     port: 6379
     database: 1
   php:
@@ -139,7 +139,7 @@ mysql:
 
   ## Disable MySQL replication
   replication:
-    enabled: true
+    enabled: false
 
   db:
     name: shopware
@@ -175,7 +175,7 @@ mysql:
       socket=/opt/bitnami/mysql/tmp/mysql.sock
       pid-file=/opt/bitnami/mysql/tmp/mysqld.pid
     persistence:
-      enabled: false
+      enabled: true
       ## MySQL data Persistent Volume Storage Class
       ## If defined, storageClassName: <storageClass>
       ## If set to "-", storageClassName: "", which disables dynamic provisioning
@@ -191,4 +191,5 @@ elasticsearch:
   enabled: false
 
 redis:
+  enabled: true
   usePassword: false

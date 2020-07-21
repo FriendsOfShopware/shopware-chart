@@ -12,6 +12,7 @@ dependencies:
   - name: redis
     version: 10.7.11
     repository: https://charts.bitnami.com/bitnami
+    condition: redis.enabled
   - name: elasticsearch
     version: 12.5.1
     repository: https://charts.bitnami.com/bitnami
