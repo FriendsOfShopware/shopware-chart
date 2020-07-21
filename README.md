@@ -7,15 +7,11 @@ Shopware is a trendsetting ecommerce platform to power your online business. Our
 
 ## Prerequisites
 
+- min Shopware 6.3.0.0
+- External Storage like S3, GCP
 - Kubernetes 1.12+
 - Helm 3
 - PV provisioner support in the underlying infrastructure
-- Will require Shopware 6.3.0.0 (Filesystem Refactoring)
-
-## Known issues
-
-* Currently mounted shopware folders
-    * Will be replaced with an external storage adapter with 6.3.0.0 release
 
 ## Parameters
 

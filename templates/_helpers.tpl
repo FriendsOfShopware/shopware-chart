@@ -74,18 +74,10 @@ Usage:
 {{- define "shopware-chart.env-cfg" -}}
 - name: "APP_ENV"
   value: "{{ .Values.shopware.appEnv }}"
-- name: "APP_SECRET"
-  value: "{{ .Values.shopware.appSecret }}"
 - name: "APP_URL"
   value: "{{ .Values.shopware.appUrl }}"
-- name: "INSTANCE_ID"
-  value: "{{ .Values.shopware.instanceId }}"
 - name: "DATABASE_HOST"
   value: "{{ .Values.shopware.databaseHost }}"
-- name: "DATABASE_URL"
-  value: "{{ .Values.shopware.databaseUrl }}"
-- name: "MAILER_URL"
-  value: "{{ .Values.shopware.mailerUrl }}"
 - name: "SHOPWARE_ES_HOSTS"
   value: "{{ .Release.Name }}-{{ .Values.shopware.elasticSearch.hosts }}"
 - name: "SHOPWARE_ES_ENABLED"
@@ -148,3 +140,16 @@ Usage:
 {{- include "shopware-chart.tplValue" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
 {{- end }}
 {{- end -}}
+
+{{- define "shopware-chart.randomSecret" -}}
+{{- randAlphaNum 63 -}}{{- randNumeric 1 -}}
+{{- end -}}
+
+
+{{- define "shopware-chart.appSecret" -}}
+{{- default (include "shopware-chart.randomSecret" .) .Values.shopware.appSecret -}}
+{{- end }}
+
+{{- define "shopware-chart.instanceId" -}}
+{{- default (include "shopware-chart.randomSecret" .) .Values.shopware.instanceId -}}
+{{- end }}

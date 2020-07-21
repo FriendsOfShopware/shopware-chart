@@ -28,9 +28,9 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       restartPolicy: Always
       volumes:
-        - name: config-pvc
-          persistentVolumeClaim:
-            claimName: {{ include "shopware-chart.fullname" . }}
+        - name: custom-config
+          configMap:
+            name: "{{ include "shopware-chart.fullname" . }}-custom-config"
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -38,32 +38,18 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args: ["cli", "scheduled-task:run", "--memory-limit=1G", "--time-limit=60"]
+          envFrom:
+            - secretRef:
+                name: "{{ include "shopware-chart.fullname" . }}-env"
           env:
             {{- include "shopware-chart.env-cfg" . | nindent 12 }}
-          volumeMounts:
-            - name: config-pvc
-              mountPath: /state
-              subPath: ./state
-            - name: config-pvc
-              mountPath: /var/www/html/custom/plugins
-              subPath: ./plugins
-            - name: config-pvc
-              mountPath: /var/www/html/config/jwt
-              subPath: ./jwt
-            - name: config-pvc
-              mountPath: /var/www/html/public/theme
-              subPath: ./public/theme
-            - name: config-pvc
-              mountPath: /var/www/html/public/bundles
-              subPath: ./public/bundles
-            - name: config-pvc
-              mountPath: /var/www/html/public/thumbnail
-              subPath: ./public/thumbnail
-            - name: config-pvc
-              mountPath: /var/www/html/public/media
-              subPath: ./public/media
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: custom-config
+              mountPath: "/var/www/html/config/packages/custom.yaml"
+              subPath: ./custom.yml
+              readOnly: true
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

@@ -8,7 +8,7 @@ image:
   registry: docker.io
   repository: shyim/shopware
   pullPolicy: IfNotPresent
-  tag: "6.2.3"
+  tag: "6.3.0.0-dev"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -73,6 +73,7 @@ shopware:
       startServers: "2"
       minSpareServers: "1"
       maxSpareServers: "3"
+  customConfig: ''
 
 configPersistence:
   accessModes:
@@ -134,9 +135,6 @@ tolerations: []
 affinity: {}
 
 mysql:
-  ## Whether to deploy a MySQL server to satisfy the applications database requirements. To use an external database set this to false and configure the externalDatabase parameters
-  enabled: true
-
   ## Disable MySQL replication
   replication:
     enabled: true

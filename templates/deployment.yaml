@@ -30,6 +30,9 @@ spec:
         - name: config-pvc
           persistentVolumeClaim:
             claimName: {{ include "shopware-chart.fullname" . }}
+        - name: custom-config
+          configMap:
+            name: "{{ include "shopware-chart.fullname" . }}-custom-config"
       initContainers:
         - name: init-{{ .Chart.Name }}
           securityContext:
@@ -37,30 +40,20 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args: ["maintenance"]
+          envFrom:
+            - secretRef:
+                name: "{{ include "shopware-chart.fullname" . }}-env"
           volumeMounts:
             - name: config-pvc
               mountPath: /state
               subPath: ./state
             - name: config-pvc
-              mountPath: /var/www/html/custom/plugins
-              subPath: ./plugins
-
-            # Can be removed with 6.3.0.0 when Flysystem has been fixed and replaced with external storage like minio,gcp, s3
-            - name: config-pvc
               mountPath: /var/www/html/config/jwt
               subPath: ./jwt
-            - name: config-pvc
-              mountPath: /var/www/html/public/theme
-              subPath: ./public/theme
-            - name: config-pvc
-              mountPath: /var/www/html/public/bundles
-              subPath: ./public/bundles
-            - name: config-pvc
-              mountPath: /var/www/html/public/thumbnail
-              subPath: ./public/thumbnail
-            - name: config-pvc
-              mountPath: /var/www/html/public/media
-              subPath: ./public/media
+            - name: custom-config
+              mountPath: "/var/www/html/config/packages/custom.yaml"
+              subPath: ./custom.yml
+              readOnly: true
           env:
             {{- include "shopware-chart.env-cfg" . | nindent 12 }}
       containers:
@@ -70,32 +63,19 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args: ["web"]
+          envFrom:
+            - secretRef:
+                name: "{{ include "shopware-chart.fullname" . }}-env"
           env:
             {{- include "shopware-chart.env-cfg" . | nindent 12 }}
           volumeMounts:
             - name: config-pvc
-              mountPath: /state
-              subPath: ./state
-            - name: config-pvc
-              mountPath: /var/www/html/custom/plugins
-              subPath: ./plugins
-
-            # Can be removed with 6.3.0.0 when Flysystem has been fixed
-            - name: config-pvc
               mountPath: /var/www/html/config/jwt
               subPath: ./jwt
-            - name: config-pvc
-              mountPath: /var/www/html/public/theme
-              subPath: ./public/theme
-            - name: config-pvc
-              mountPath: /var/www/html/public/bundles
-              subPath: ./public/bundles
-            - name: config-pvc
-              mountPath: /var/www/html/public/thumbnail
-              subPath: ./public/thumbnail
-            - name: config-pvc
-              mountPath: /var/www/html/public/media
-              subPath: ./public/media
+            - name: custom-config
+              mountPath: "/var/www/html/config/packages/custom.yaml"
+              subPath: ./custom.yml
+              readOnly: true
           ports:
             - name: http
               containerPort: 80
