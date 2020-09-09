@@ -21,7 +21,7 @@ See ``values.yml``
 
 * Generate a JWT Token using `generate_jwt.php` script
 * Configure parameters
-* Run `helm install`
+* Run `helm dependency update && helm install`
 
 ## Example parameters
 
