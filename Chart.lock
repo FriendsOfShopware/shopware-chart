@@ -1,12 +1,18 @@
 dependencies:
-- name: mysql
+- name: mariadb
   repository: https://charts.bitnami.com/bitnami
-  version: 6.14.4
+  version: 9.8.1
 - name: redis
   repository: https://charts.bitnami.com/bitnami
-  version: 10.7.11
+  version: 15.6.4
 - name: elasticsearch
   repository: https://charts.bitnami.com/bitnami
-  version: 12.5.1
-digest: sha256:e1ac22e0036db2e81557c7f17b0e6b8c45208d0de2a7e886429c4ed0bb47cdb5
-generated: "2020-07-20T21:04:14.102847579+02:00"
+  version: 17.5.0
+- name: minio
+  repository: https://charts.bitnami.com/bitnami
+  version: 9.2.5
+- name: common
+  repository: https://charts.bitnami.com/bitnami
+  version: 1.10.3
+digest: sha256:7e0de68e41b3e64d716ec0c4c2c14c72f49a73ee79731a41ab2a8db79bc561b9
+generated: "2021-12-13T21:42:18.827447663+01:00"
