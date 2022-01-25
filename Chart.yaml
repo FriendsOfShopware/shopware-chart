@@ -1,19 +1,44 @@
+annotations:
+  category: CMS
 apiVersion: v2
-name: shopware-chart
-description: A Helm chart for Shopware 6
-type: application
-version: 0.0.1
-appVersion: 6.3.0.2
+appVersion: 6.4.7
 dependencies:
-  - name: mysql
-    version: 6.14.4
+  - name: mariadb
+    condition: mariadb.enabled
     repository: https://charts.bitnami.com/bitnami
-    condition: mysql.enabled
+    version: 9.x.x
   - name: redis
-    version: 10.7.11
+    version: 15.x.x
     repository: https://charts.bitnami.com/bitnami
     condition: redis.enabled
   - name: elasticsearch
-    version: 12.5.1
+    version: 17.x.x
     repository: https://charts.bitnami.com/bitnami
     condition: elasticsearch.enabled
+  - name: minio
+    version: 9.x.x
+    repository: https://charts.bitnami.com/bitnami
+    condition: minio.enabled
+  - name: common
+    repository: https://charts.bitnami.com/bitnami
+    tags:
+      - bitnami-common
+    version: 1.x.x
+description: Web publishing platform for building blogs and websites.
+engine: gotpl
+home: https://github.com/robjuz/helm-charts/tree/master/charts/shopware
+keywords:
+  - application
+  - cms
+  - http
+  - php
+  - web
+  - shopware
+maintainers:
+  - email: robjuz@gmail.com
+    name: robjuz
+name: shopware
+sources:
+  - https://github.com/shyim/shopware
+  - https://www.shopware.com
+version: 2.0.0

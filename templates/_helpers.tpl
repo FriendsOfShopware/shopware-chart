@@ -1,150 +1,252 @@
 {{/* vim: set filetype=mustache: */}}
-{{/*
-Expand the name of the chart.
-*/}}
-{{- define "shopware-chart.name" -}}
-{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
-{{- end }}
 
 {{/*
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
-If release name contains chart name it will be used as a full name.
 */}}
-{{- define "shopware-chart.fullname" -}}
-{{- if .Values.fullnameOverride }}
-{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
-{{- else }}
-{{- .Release.Name | trunc 63 | trimSuffix "-" }}
-{{- end }}
-{{- end }}
-
-{{/*
-Create chart name and version as used by the chart label.
-*/}}
-{{- define "shopware-chart.chart" -}}
-{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
-{{- end }}
-
-{{/*
-Common labels
-*/}}
-{{- define "shopware-chart.labels" -}}
-helm.sh/chart: {{ include "shopware-chart.chart" . }}
-{{ include "shopware-chart.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- end }}
-
-{{/*
-Selector labels
-*/}}
-{{- define "shopware-chart.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "shopware-chart.name" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
-{{- end }}
-
-{{/*
-Create the name of the service account to use
-*/}}
-{{- define "shopware-chart.serviceAccountName" -}}
-{{- default "default" .Values.serviceAccount.name }}
-{{- end }}
-
-{{/*
-Renders a value that contains template.
-Usage:
-{{ include "shopware-chart.tplValue" ( dict "value" .Values.path.to.the.Value "context" $) }}
-*/}}
-{{- define "shopware-chart.tplValue" -}}
-    {{- if typeIs "string" .value }}
-        {{- tpl .value .context }}
-    {{- else }}
-        {{- tpl (.value | toYaml) .context }}
-    {{- end }}
+{{- define "shopware.mariadb.fullname" -}}
+{{- include "common.names.dependency.fullname" (dict "chartName" "mariadb" "chartValues" .Values.mariadb "context" $) -}}
 {{- end -}}
 
-{{- define "shopware-chart.env-cfg" -}}
-- name: "APP_ENV"
-  value: "{{ .Values.shopware.appEnv }}"
-- name: "APP_URL"
-  value: "{{ .Values.shopware.appUrl }}"
-- name: "DATABASE_HOST"
-  value: "{{ .Values.shopware.databaseHost }}"
-- name: "SHOPWARE_ES_HOSTS"
-  value: "{{ .Values.shopware.elasticSearch.hosts }}"
-- name: "SHOPWARE_ES_ENABLED"
-  value: "{{ .Values.shopware.elasticSearch.enabled }}"
-- name: "SHOPWARE_ES_INDEXING_ENABLED"
-  value: "{{ .Values.shopware.elasticSearch.indexingEnabled }}"
-- name: "SHOPWARE_ES_INDEX_PREFIX"
-  value: "{{ .Values.shopware.elasticSearch.indexPrefix }}"
-- name: "SHOPWARE_HTTP_CACHE_ENABLED"
-  value: "{{ .Values.shopware.httpCache.enabled }}"
-- name: "SHOPWARE_HTTP_DEFAULT_TTL"
-  value: "{{ .Values.shopware.httpCache.defaultTtl }}"
-- name: "DISABLE_ADMIN_WORKER"
-  value: "{{ .Values.shopware.admin.disableWorker }}"
-- name: "INSTALL_LOCALE"
-  value: "{{ .Values.shopware.install.locale }}"
-- name: "INSTALL_CURRENCY"
-  value: "{{ .Values.shopware.install.currency }}"
-- name: "INSTALL_ADMIN_USERNAME"
-  value: "{{ .Values.shopware.install.adminUsername }}"
-- name: "INSTALL_ADMIN_PASSWORD"
-  value: "{{ .Values.shopware.install.adminPassword }}"
-- name: "CACHE_ADAPTER"
-  value: "{{ .Values.shopware.cache.adapter }}"
-- name: "REDIS_CACHE_HOST"
-  value: "{{ .Values.shopware.cache.host }}"
-- name: "REDIS_CACHE_PORT"
-  value: "{{ .Values.shopware.cache.port }}"
-- name: "REDIS_CACHE_DATABASE"
-  value: "{{ .Values.shopware.cache.database }}"
-- name: "SESSION_ADAPTER"
-  value: "{{ .Values.shopware.session.adapter }}"
-- name: "REDIS_SESSION_HOST"
-  value: "{{ .Values.shopware.session.host }}"
-- name: "REDIS_SESSION_PORT"
-  value: "{{ .Values.shopware.session.port }}"
-- name: "REDIS_SESSION_DATABASE"
-  value: "{{ .Values.shopware.session.database }}"
-- name: "ACTIVE_PLUGINS"
-  value: "{{ .Values.shopware.activePlugins }}"
-- name: "TZ"
-  value: "{{ .Values.shopware.php.timeZone }}"
-- name: "PHP_MAX_UPLOAD_SIZE"
-  value: "{{ .Values.shopware.php.maxUploadSize }}"
-- name: "PHP_MAX_EXECUTION_TIME"
-  value: "{{ .Values.shopware.php.maxExecutionTime }}"
-- name: "PHP_MEMORY_LIMIT"
-  value: "{{ .Values.shopware.php.memoryLimit }}"
-- name: "FPM_PM"
-  value: "{{ .Values.shopware.php.fpm.pm }}"
-- name: "FPM_PM_MAX_CHILDREN"
-  value: "{{ .Values.shopware.php.fpm.maxChildren }}"
-- name: "FPM_PM_START_SERVERS"
-  value: "{{ .Values.shopware.php.fpm.startServers }}"
-- name: "FPM_PM_MIN_SPARE_SERVERS"
-  value: "{{ .Values.shopware.php.fpm.minSpareServers }}"
-- name: "FPM_PM_MAX_SPARE_SERVERS"
-  value: "{{ .Values.shopware.php.fpm.maxSpareServers }}"
-{{- if .Values.extraEnvVars }}
-{{- include "shopware-chart.tplValue" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
-{{- end }}
+{{/*
+Create a default fully qualified app name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+*/}}
+{{- define "shopware.redis.fullname" -}}
+{{- include "common.names.dependency.fullname" (dict "chartName" "redis-master" "chartValues" .Values.redis "context" $) -}}
 {{- end -}}
 
-{{- define "shopware-chart.randomSecret" -}}
+{{/*
+Return the proper Shopware image name
+*/}}
+{{- define "shopware.image" -}}
+{{- include "common.images.image" (dict "imageRoot" .Values.image "global" .Values.global) -}}
+{{- end -}}
+
+{{/*
+Return the proper image name (for the metrics image)
+*/}}
+{{- define "shopware.metrics.image" -}}
+{{- include "common.images.image" (dict "imageRoot" .Values.metrics.image "global" .Values.global) -}}
+{{- end -}}
+
+{{/*
+Return the proper image name (for the init container volume-permissions image)
+*/}}
+{{- define "shopware.volumePermissions.image" -}}
+{{- include "common.images.image" ( dict "imageRoot" .Values.volumePermissions.image "global" .Values.global ) -}}
+{{- end -}}
+
+{{/*
+Return the proper Docker Image Registry Secret Names
+*/}}
+{{- define "shopware.imagePullSecrets" -}}
+{{- include "common.images.pullSecrets" (dict "images" (list .Values.image .Values.metrics.image .Values.volumePermissions.image) "global" .Values.global) -}}
+{{- end -}}
+
+
+{{/*
+Return the MariaDB Hostname
+*/}}
+{{- define "shopware.databaseHost" -}}
+{{- if .Values.mariadb.enabled }}
+    {{- if eq .Values.mariadb.architecture "replication" }}
+        {{- printf "%s-primary" (include "shopware.mariadb.fullname" .) | trunc 63 | trimSuffix "-" -}}
+    {{- else -}}
+        {{- printf "%s" (include "shopware.mariadb.fullname" .) -}}
+    {{- end -}}
+{{- else -}}
+    {{- printf "%s" .Values.externalDatabase.host -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the MariaDB Port
+*/}}
+{{- define "shopware.databasePort" -}}
+{{- if .Values.mariadb.enabled }}
+    {{- printf "3306" -}}
+{{- else -}}
+    {{- printf "%d" (.Values.externalDatabase.port | int ) -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the MariaDB Database Name
+*/}}
+{{- define "shopware.databaseName" -}}
+{{- if .Values.mariadb.enabled }}
+    {{- printf "%s" .Values.mariadb.auth.database -}}
+{{- else -}}
+    {{- printf "%s" .Values.externalDatabase.database -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the MariaDB User
+*/}}
+{{- define "shopware.databaseUser" -}}
+{{- if .Values.mariadb.enabled }}
+    {{- printf "%s" .Values.mariadb.auth.username -}}
+{{- else -}}
+    {{- printf "%s" .Values.externalDatabase.user -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the MariaDB Password
+*/}}
+{{- define "shopware.databasePassword" -}}
+{{- if .Values.mariadb.enabled }}
+    {{- printf "%s" .Values.mariadb.auth.password -}}
+{{- else -}}
+    {{- printf "%s" .Values.externalDatabase.password -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the MariaDB Secret Name
+*/}}
+{{- define "shopware.databaseSecretName" -}}
+{{- if .Values.mariadb.enabled }}
+    {{- if .Values.mariadb.auth.existingSecret -}}
+        {{- printf "%s" .Values.mariadb.auth.existingSecret -}}
+    {{- else -}}
+        {{- printf "%s" (include "shopware.mariadb.fullname" .) -}}
+    {{- end -}}
+{{- else if .Values.externalDatabase.existingSecret -}}
+    {{- printf "%s" .Values.externalDatabase.existingSecret -}}
+{{- else -}}
+    {{- printf "%s-externaldb" (include "common.names.fullname" .) -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the MariaDB URL
+*/}}
+{{- define "shopware.databaseUrl" -}}
+mysql://{{ include "shopware.databaseUser" . }}:{{ include "shopware.databasePassword" . }}@{{ include "shopware.databaseHost" . }}/{{ include "shopware.databaseName" . }}
+{{- end }}
+
+
+{{/*
+Return the ElasticSearch Hostname
+*/}}
+{{- define "shopware.elasticsearch.fullname" -}}
+{{- if .Values.elasticsearch.enabled -}}
+{{- printf "%s-%s-coordinating-only" .Release.Name "elasticsearch" | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- printf "%s" .Values.externalElasticsearch.host -}}
+{{- end -}}
+
+{{- define "shopware.minio.fullname" -}}
+{{- if .Values.fullnameOverride -}}
+{{- printf "%s-minio" .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- $name := default .Chart.Name .Values.nameOverride -}}
+{{- if contains $name .Release.Name -}}
+{{- printf "%s-minio" .Release.Name | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- printf "%s-%s-minio" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "shopware.minio.endpoint" -}}
+{{- printf "http://%s:%d" (include "shopware.minio.fullname" .) (.Values.minio.service.ports.api | int)  -}}
+{{- end -}}
+
+{{- define "shopware.minio.url" -}}
+{{- if .Values.minio.url -}}
+{{- printf "%s" .Values.minio.url -}}
+{{- else -}}
+{{- printf "%s" .Values.shopwareAppUrl -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the Redis Hostname
+*/}}
+{{- define "shopware.cacheHost" -}}
+{{- if .Values.redis.enabled }}
+    {{- $releaseNamespace := .Release.Namespace }}
+    {{- $clusterDomain := .Values.clusterDomain }}
+    {{- printf "%s.%s.svc.%s" (include "shopware.redis.fullname" .) $releaseNamespace $clusterDomain -}}
+{{- else -}}
+    {{- printf "%s" .Values.externalCache.host -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the Redis Port
+*/}}
+{{- define "shopware.cachePort" -}}
+{{- if .Values.redis.enabled }}
+    {{- printf "6379" -}}
+{{- else -}}
+    {{- printf "%d" (.Values.externalCache.port | int ) -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the Shopware Secret Name
+*/}}
+{{- define "shopware.secretName" -}}
+    {{- printf "%s" (include "common.names.fullname" .) -}}
+{{- end -}}
+
+{{/*
+Compile all warnings into a single message.
+*/}}
+{{- define "shopware.validateValues" -}}
+{{- $messages := list -}}
+{{- $messages := append $messages (include "shopware.validateValues.appUrl" .) -}}
+{{- $messages := append $messages (include "shopware.validateValues.database" .) -}}
+{{- $messages := without $messages "" -}}
+{{- $message := join "\n" $messages -}}
+{{- if $message -}}
+{{-   printf "\nVALUES VALIDATION:\n%s" $message | fail -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Validate values of Shopware - app url
+*/}}
+{{- define "shopware.validateValues.appUrl" -}}
+{{- if not .Values.shopwareAppUrl -}}
+shopware: shopwareAppUrl
+    You need to provide APP_URL (--set shopwareAppUrl=http://shopware.example.com).
+{{- end -}}
+{{- end -}}
+
+{{/* Validate values of Shopware - Database */}}
+{{- define "shopware.validateValues.database" -}}
+{{- if and (not .Values.mariadb.enabled) (or (empty .Values.externalDatabase.host) (empty .Values.externalDatabase.port) (empty .Values.externalDatabase.database)) -}}
+shopware: database
+   You disable the MariaDB installation but you did not provide the required parameters
+   to use an external database. To use an external database, please ensure you provide
+   (at least) the following values:
+
+       externalDatabase.host=DB_SERVER_HOST
+       externalDatabase.database=DB_NAME
+       externalDatabase.port=DB_SERVER_PORT
+{{- end -}}
+{{- end -}}
+
+{{/* Validate values of Shopware - Elasticsearch */}}
+{{- define "shopware.validateValues.elasticsearch" -}}
+{{- if and (not .Values.mariadb.enabled) (or (empty .Values.externalDatabase.host) (empty .Values.externalDatabase.port) (empty .Values.externalDatabase.database)) -}}
+shopware: database
+   You disable the MariaDB installation but you did not provide the required parameters
+   to use an external database. To use an external database, please ensure you provide
+   (at least) the following values:
+
+       externalDatabase.host=DB_SERVER_HOST
+       externalDatabase.database=DB_NAME
+       externalDatabase.port=DB_SERVER_PORT
+{{- end -}}
+{{- end -}}
+
+{{- define "shopware.randomSecret" -}}
 {{- randAlphaNum 63 -}}{{- randNumeric 1 -}}
 {{- end -}}
-
-
-{{- define "shopware-chart.appSecret" -}}
-{{- default (include "shopware-chart.randomSecret" .) .Values.shopware.appSecret -}}
-{{- end }}
-
-{{- define "shopware-chart.instanceId" -}}
-{{- default (include "shopware-chart.randomSecret" .) .Values.shopware.instanceId -}}
-{{- end }}
